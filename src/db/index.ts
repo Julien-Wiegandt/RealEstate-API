@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from "node-postgres";
+import { Pool, QueryConfig } from "pg";
 
 let pool: Pool;
 
@@ -12,6 +12,6 @@ export function initDatabase() {
   });
 }
 
-export async function query(text: string, params: any[]) {
-  return pool.query(text, params);
+export async function query(query: QueryConfig) {
+  return pool.query(query);
 }

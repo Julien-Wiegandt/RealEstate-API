@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { NotFoundError } from "../exceptions/NotFoundError";
 import * as UsersService from "./users.service";
 
 export const usersRouter = express.Router();
@@ -18,6 +19,9 @@ usersRouter.get("/:id", async (req: Request, res: Response) => {
     const user = await UsersService.findOne(id);
     res.status(200).json(user);
   } catch (e) {
+    if (e instanceof NotFoundError) {
+      res.status(404).json({ message: e.getMessage() });
+    }
     res.sendStatus(500);
   }
 });

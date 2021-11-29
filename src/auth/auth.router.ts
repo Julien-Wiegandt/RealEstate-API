@@ -1,26 +1,39 @@
 import express from "express";
-import { BaseUser } from "../users/users.interface";
-import { Credentials } from "./auth.interface";
+import { NotFoundError } from "../exceptions/NotFoundError";
+import { UniqueError } from "../exceptions/UniqueError";
+import { WrongTypeError } from "../exceptions/WrongTypeError";
+import { BaseUser, castToBaseUser } from "../users/users.interface";
+import { castToCredentials, Credentials } from "./auth.interface";
 import * as AuthService from "./auth.service";
 
 export const authRouter = express.Router();
 
 authRouter.get("/login", async (req, res) => {
   try {
-    const credentials: Credentials = req.body;
+    const credentials = castToCredentials(req.body);
     const token = await AuthService.login(credentials);
     res.status(200).json(token);
-  } catch {
+  } catch (e) {
+    if (e instanceof NotFoundError) {
+      res.status(403).json({ message: e.getMessage() });
+    } else if (e instanceof WrongTypeError) {
+      res.status(403).json({ message: "Bad request (body)" });
+    }
     res.sendStatus(500);
   }
 });
 
-authRouter.post("register", async (req, res) => {
+authRouter.post("/register", async (req, res) => {
   try {
-    const user: BaseUser = req.body;
+    const user: BaseUser = castToBaseUser(req.body);
     const newUser = await AuthService.register(user);
-    return newUser;
-  } catch {
+    res.status(201).json(newUser);
+  } catch (e) {
+    if (e instanceof UniqueError) {
+      res.status(403).json({ message: e.getMessage() });
+    } else if (e instanceof WrongTypeError) {
+      res.status(403).json({ message: "Bad request (body)" });
+    }
     res.sendStatus(500);
   }
 });

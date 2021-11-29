@@ -8,6 +8,7 @@ import helmet from "helmet";
 import { usersRouter } from "./users/users.router";
 import { housingsRouter } from "./housings/housings.router";
 import { initDatabase } from "./db/index";
+import { authRouter } from "./auth/auth.router";
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/users", usersRouter);
 app.use("/api/housings", housingsRouter);
+app.use("/api/auth", authRouter);
 
 /**
  * Server Activation

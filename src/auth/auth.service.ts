@@ -1,20 +1,28 @@
 import { compare, hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
+import { QueryConfig } from "pg";
 import { query } from "../db";
+import { NotFoundError } from "../exceptions/NotFoundError";
+import { UniqueError } from "../exceptions/UniqueError";
 import { BaseUser, User } from "../users/users.interface";
 import { Credentials } from "./auth.interface";
 
 export const login = async (credentials: Credentials) => {
-  const res = await query("SELECT * FROM users u WHERE u.mail = $1", [
-    credentials.mail,
-  ]);
+  const preparedStatement: QueryConfig = {
+    name: "check-user-mail",
+    text: "SELECT * FROM users u WHERE u.mail = $1",
+    values: [credentials.mail],
+  };
+  const res = await query(preparedStatement);
   if (res.rows[0]) {
     const user: User = res.rows[0];
     if (await checkPassword(credentials.password, user.password)) {
       return generateToken(user);
+    } else {
+      throw new NotFoundError(`No match for these credentials`);
     }
   }
-  throw new Error("not found");
+  throw new NotFoundError(`No match for these credentials`);
 };
 
 const generateToken = (user: User) => {
@@ -22,7 +30,7 @@ const generateToken = (user: User) => {
   const tokenPayload = {
     sub: user.id,
     user: userData,
-    accessToken: true,
+    access_token: true,
   };
   return sign(tokenPayload, process.env.JWT_KEY!, { expiresIn: "1h" });
 };
@@ -40,15 +48,20 @@ const hashPassword = async (str: string) => {
 };
 
 export const register = async (user: BaseUser) => {
+  const hashedPassword = await hashPassword(user.password);
+  const preparedStatement: QueryConfig = {
+    name: "save-user",
+    text: `INSERT INTO users(mail,password) VALUES ($1,$2) RETURNING *`,
+    values: [user.mail, hashedPassword],
+  };
   try {
-    const hashedPassword = await hashPassword(user.password);
-    const res = await query(
-      "INSERT INTO users (mail,password) VALUES ($1,$2)",
-      [user.mail, hashedPassword]
-    );
+    const res = await query(preparedStatement);
     const { password, ...userData } = res.rows[0];
     return userData;
-  } catch (err) {
-    throw new Error();
+  } catch (err: any) {
+    if (err && err.code && err.code === "23505") {
+      throw new UniqueError(err.detail);
+    }
+    throw err;
   }
 };
