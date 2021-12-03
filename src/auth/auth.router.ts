@@ -8,18 +8,19 @@ import * as AuthService from "./auth.service";
 
 export const authRouter = express.Router();
 
-authRouter.get("/login", async (req, res) => {
+authRouter.post("/login", async (req, res) => {
   try {
     const credentials = castToCredentials(req.body);
     const token = await AuthService.login(credentials);
-    res.status(200).json(token);
+    res.status(200).json({jwt: token});
   } catch (e) {
     if (e instanceof NotFoundError) {
       res.status(403).json({ message: e.getMessage() });
     } else if (e instanceof WrongTypeError) {
       res.status(403).json({ message: "Bad request (body)" });
+    }else{
+      res.sendStatus(500);
     }
-    res.sendStatus(500);
   }
 });
 
@@ -33,7 +34,8 @@ authRouter.post("/register", async (req, res) => {
       res.status(403).json({ message: e.getMessage() });
     } else if (e instanceof WrongTypeError) {
       res.status(403).json({ message: "Bad request (body)" });
+    }else{
+      res.sendStatus(500);
     }
-    res.sendStatus(500);
   }
 });
