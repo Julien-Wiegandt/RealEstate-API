@@ -51,8 +51,8 @@ export const register = async (user: BaseUser) => {
   const hashedPassword = await hashPassword(user.password);
   const preparedStatement: QueryConfig = {
     name: "save-user",
-    text: `INSERT INTO users(mail,password) VALUES ($1,$2) RETURNING *`,
-    values: [user.mail, hashedPassword],
+    text: `INSERT INTO users(mail,password,name) VALUES ($1,$2,$3) RETURNING *`,
+    values: [user.mail, hashedPassword, user.name],
   };
   try {
     const res = await query(preparedStatement);
