@@ -24,8 +24,9 @@ housingsRouter.get("/:id", async (req: Request, res: Response) => {
   } catch (e) {
     if (e instanceof NotFoundError) {
       res.status(404).json({ message: e.getMessage() });
+    }else{
+      res.sendStatus(500);
     }
-    res.sendStatus(500);
   }
 });
 
@@ -35,10 +36,13 @@ housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
     const newHousing = await HousingsService.create(housing, req.user.id);
     res.status(201).json(newHousing);
   } catch (e) {
+    console.log(e)
+
     if (e instanceof WrongTypeError) {
       res.status(403).json({ message: "Bad request (body)" });
+    }else{
+      res.sendStatus(500);
     }
-    res.sendStatus(500);
   }
 });
 

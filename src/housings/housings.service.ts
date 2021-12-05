@@ -30,11 +30,12 @@ export const findAll = async () => {
 };
 
 export const create = async (housing: BaseHousing, userId: any) => {
-  const { name, city, address, description, price, rent } = housing;
+  const { title, email, address, description, estatePrice, rent, estateType, numberBath, numberBed, phone} = housing;
+  console.log(housing)
   const preparedStatement: QueryConfig = {
     name: "save-housing",
-    text: `INSERT INTO housings(name,city,address,description,price,rent,id_user) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-    values: [name, city, address, description, price, rent, userId],
+    text: `INSERT INTO housings(title,email,address,description,estateprice,estatetype,numberbath,numberbed,phone,rent,id_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+    values: [title, email, address, description, estatePrice,estateType,numberBath,numberBed,phone, rent, userId],
   };
   try {
     const res = await query(preparedStatement);

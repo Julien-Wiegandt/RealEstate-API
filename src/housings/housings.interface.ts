@@ -1,13 +1,18 @@
 import { WrongTypeError } from "../exceptions/WrongTypeError";
 
 export interface BaseHousing {
-  name: string;
-  city: string;
+  title: string;
   address: string;
-  price: number;
+  estatePrice: number;
+  estateType: string;
   rent: boolean;
+  numberBath: string;
+  numberBed: string;
+  email: string;
+  phone: string;
   description: string;
 }
+
 
 export interface Housing extends BaseHousing {
   id: string;
@@ -16,14 +21,19 @@ export interface Housing extends BaseHousing {
 export function castToBaseHousing(obj: any): BaseHousing {
   if (
     obj &&
-    obj.name &&
-    obj.city &&
+    obj.title &&
     obj.address &&
-    obj.price &&
-    obj.rent &&
+    obj.estateType &&
+    obj.estatePrice &&
+    obj.numberBath &&
+    obj.numberBed &&
+    obj.email &&
+    obj.phone && obj.rent !== undefined &&
     obj.description
   ) {
     return obj as BaseHousing;
   }
+
+
   throw new WrongTypeError();
 }
