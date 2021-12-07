@@ -21,8 +21,9 @@ usersRouter.get("/:id", async (req: Request, res: Response) => {
   } catch (e) {
     if (e instanceof NotFoundError) {
       res.status(404).json({ message: e.getMessage() });
+    } else {
+      res.sendStatus(500);
     }
-    res.sendStatus(500);
   }
 });
 
