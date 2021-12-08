@@ -12,7 +12,6 @@ authRouter.post("/login", async (req, res) => {
   try {
     const credentials = castToCredentials(req.body);
     const token = await AuthService.login(credentials);
-    console.log(token);
     res.status(200).json({ jwt: token });
   } catch (e) {
     if (e instanceof NotFoundError) {
