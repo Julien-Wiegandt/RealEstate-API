@@ -2,7 +2,10 @@ import { WrongTypeError } from "../exceptions/WrongTypeError";
 
 export interface BaseHousing {
   title: string;
-  address: string;
+  street: string;
+  city: string;
+  codePostal: string;
+  country: string;
   estatePrice: number;
   estateType: string;
   rent: boolean;
@@ -23,7 +26,10 @@ export function castToBaseHousing(obj: any): BaseHousing {
   if (
       obj &&
       obj.title &&
-      obj.address &&
+      obj.street &&
+      obj.city &&
+      obj.codePostal &&
+      obj.country &&
       obj.estateType &&
       obj.estatePrice &&
       (obj.numberBath || obj.numberBath == 0) &&
@@ -35,17 +41,5 @@ export function castToBaseHousing(obj: any): BaseHousing {
   ) {
     return obj as BaseHousing;
   }
-
-  console.log(obj &&
-      obj.title &&
-      obj.address &&
-      obj.estateType &&
-      obj.estatePrice &&
-      (obj.numberBath || obj.numberBath == 0) &&
-      (obj.numberBed || obj.numberBed == 0) &&
-      obj.email &&
-      obj.phone && obj.rent !== undefined &&
-      obj.description &&
-      obj.latLong)
   throw new WrongTypeError();
 }
