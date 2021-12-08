@@ -8,7 +8,7 @@ import * as AuthService from "./auth.service";
 
 export const authRouter = express.Router();
 
-authRouter.get("/login", async (req, res) => {
+authRouter.post("/login", async (req, res) => {
   try {
     const credentials = castToCredentials(req.body);
     const token = await AuthService.login(credentials);
