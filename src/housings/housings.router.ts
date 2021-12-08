@@ -32,6 +32,7 @@ housingsRouter.get("/:id", async (req: Request, res: Response) => {
 
 housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
   try {
+    console.log(req.body)
     const housing = castToBaseHousing(req.body);
     const newHousing = await HousingsService.create(housing, req.user.id);
     res.status(201).json(newHousing);

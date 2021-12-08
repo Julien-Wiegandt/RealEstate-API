@@ -11,6 +11,7 @@ export interface BaseHousing {
   email: string;
   phone: string;
   description: string;
+  latLong: string;
 }
 
 
@@ -20,20 +21,31 @@ export interface Housing extends BaseHousing {
 
 export function castToBaseHousing(obj: any): BaseHousing {
   if (
-    obj &&
-    obj.title &&
-    obj.address &&
-    obj.estateType &&
-    obj.estatePrice &&
-    obj.numberBath &&
-    obj.numberBed &&
-    obj.email &&
-    obj.phone && obj.rent !== undefined &&
-    obj.description
+      obj &&
+      obj.title &&
+      obj.address &&
+      obj.estateType &&
+      obj.estatePrice &&
+      (obj.numberBath || obj.numberBath == 0) &&
+      (obj.numberBed || obj.numberBed == 0) &&
+      obj.email &&
+      obj.phone && obj.rent !== undefined &&
+      obj.description &&
+      obj.latLong
   ) {
     return obj as BaseHousing;
   }
 
-
+  console.log(obj &&
+      obj.title &&
+      obj.address &&
+      obj.estateType &&
+      obj.estatePrice &&
+      (obj.numberBath || obj.numberBath == 0) &&
+      (obj.numberBed || obj.numberBed == 0) &&
+      obj.email &&
+      obj.phone && obj.rent !== undefined &&
+      obj.description &&
+      obj.latLong)
   throw new WrongTypeError();
 }
