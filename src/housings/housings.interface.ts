@@ -45,3 +45,21 @@ export function castToBaseHousing(obj: any): BaseHousing {
   }
   throw new WrongTypeError();
 }
+
+export interface Area {
+  latitude: number;
+  longitude: number;
+  radius: number;
+}
+
+export function castToArea(obj: any) {
+  if (
+    obj &&
+    !isNaN(Number(obj.latitude)) &&
+    !isNaN(obj.longitude) &&
+    !isNaN(obj.radius)
+  ) {
+    return obj as Area;
+  }
+  throw new WrongTypeError();
+}
