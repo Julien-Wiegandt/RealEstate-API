@@ -16,7 +16,7 @@ export const findOne = async (id: string) => {
   return res.rows[0];
 };
 
-export const findOneByName = async (city: string) => {
+export const findAllByName = async (city: string) => {
   let cityLower: string = city.toLowerCase()
   const preparedStatement = {
     name: "fetch-housing-id",

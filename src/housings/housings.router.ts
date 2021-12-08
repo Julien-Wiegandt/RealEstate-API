@@ -48,7 +48,7 @@ housingsRouter.get("/:id", async (req: Request, res: Response) => {
 housingsRouter.get("/city/:city", async (req: Request, res: Response) => {
   try {
     const city = req.params.city;
-    const housing = await HousingsService.findOneByName(city);
+    const housing = await HousingsService.findAllByName(city);
     res.status(200).json(housing);
   } catch (e) {
     if (e instanceof NotFoundError) {
