@@ -16,6 +16,20 @@ export const findOne = async (id: string) => {
   return res.rows[0];
 };
 
+export const findOneByName = async (city: string) => {
+  let cityLower: string = city.toLowerCase()
+  const preparedStatement = {
+    name: "fetch-housing-id",
+    text: "SELECT * FROM housings WHERE LOWER(city) LIKE $1",
+    values: [cityLower],
+  };
+  const res = await query(preparedStatement);
+  if (res.rows.length === 0) {
+    throw new NotFoundError(`Housings in city : ${city} not found`);
+  }
+  return res.rows[0];
+};
+
 export const findAll = async () => {
   const preparedStatement = {
     name: "fetch-all-housings",

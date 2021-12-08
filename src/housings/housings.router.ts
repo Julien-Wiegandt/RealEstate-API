@@ -30,6 +30,20 @@ housingsRouter.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
+housingsRouter.get("/city/:city", async (req: Request, res: Response) => {
+  try {
+    const city = req.params.city;
+    const housing = await HousingsService.findOneByName(city);
+    res.status(200).json(housing);
+  } catch (e) {
+    if (e instanceof NotFoundError) {
+      res.status(404).json({ message: e.getMessage() });
+    } else {
+      res.sendStatus(500);
+    }
+  }
+});
+
 housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
   try {
     const housing = castToBaseHousing(req.body);
