@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { WrongTypeError } from "../exceptions/WrongTypeError";
 import { verifyAccess } from "../middlewares/auth.middleware";
-import { castToBaseHousing } from "./housings.interface";
+import { castToArea, castToBaseHousing } from "./housings.interface";
 import * as HousingsService from "./housings.service";
 
 export const housingsRouter = express.Router();
@@ -13,6 +13,21 @@ housingsRouter.get("/", async (req: Request, res: Response) => {
     res.status(200).json(housings);
   } catch (e) {
     res.sendStatus(500);
+  }
+});
+
+housingsRouter.get("/area", async (req, res) => {
+  try {
+    const area = castToArea(req.body);
+    const housingWithinArea = await HousingsService.findAllInRadius(area);
+    res.status(200).json({ housings: housingWithinArea });
+  } catch (e) {
+    console.log(e);
+    if (e instanceof WrongTypeError) {
+      res.status(403).json({ msg: "Bad request (body)" });
+    } else {
+      res.sendStatus(500);
+    }
   }
 });
 

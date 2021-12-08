@@ -1,7 +1,7 @@
 import { QueryConfig } from "pg";
 import { query } from "../db";
 import { NotFoundError } from "../exceptions/NotFoundError";
-import { BaseHousing, Housing } from "./housings.interface";
+import { Area, BaseHousing, Housing } from "./housings.interface";
 
 export const findOne = async (id: string) => {
   const preparedStatement = {
@@ -16,17 +16,33 @@ export const findOne = async (id: string) => {
   return res.rows[0];
 };
 
+export const findAllInRadius = async (area: Area) => {
+  const { latitude, longitude, radius } = area;
+  const preparedStatement = {
+    name: "fetch-all-housings",
+    text: "SELECT * FROM housings",
+  };
+  const degInKm = 111;
+  const res = await query(preparedStatement);
+  return res.rows.filter((housing: any) => {
+    const pos = housing.latlong;
+    const [housingLat, housingLong] = pos
+      .split("(")[1]
+      .split(")")[0]
+      .split(",");
+    const deltaLat = Math.abs(+housingLat - latitude);
+    const deltaLong = Math.abs(+housingLong - longitude);
+    return deltaLat * degInKm < radius && deltaLong * degInKm < radius;
+  });
+};
+
 export const findAll = async () => {
   const preparedStatement = {
     name: "fetch-all-housings",
     text: "SELECT * FROM housings",
   };
-  try {
-    const res = await query(preparedStatement);
-    return res.rows;
-  } catch (err) {
-    throw Error();
-  }
+  const res = await query(preparedStatement);
+  return res.rows;
 };
 
 export const create = async (housing: BaseHousing, userId: any) => {
