@@ -17,7 +17,7 @@ export const findOne = async (id: string) => {
 };
 
 export const findAllByName = async (city: string) => {
-  let cityLower: string = city.toLowerCase()
+  let cityLower: string = "%"+city.toLowerCase()+"%"
   const preparedStatement = {
     name: "fetch-housing-id",
     text: "SELECT * FROM housings WHERE LOWER(city) LIKE $1",
