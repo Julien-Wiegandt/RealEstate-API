@@ -16,13 +16,14 @@ housingsRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
-housingsRouter.get("/area", async (req, res) => {
+housingsRouter.get("/area/:longitude&:latitude&:radius", async (req, res) => {
   try {
-    const area = castToArea(req.body);
+    const area = castToArea(req.params);
     const housingWithinArea = await HousingsService.findAllInRadius(area);
+    console.log(housingWithinArea)
     res.status(200).json({ housings: housingWithinArea });
   } catch (e) {
-    console.log(e);
+    console.log(e)
     if (e instanceof WrongTypeError) {
       res.status(403).json({ msg: "Bad request (body)" });
     } else {
@@ -49,7 +50,7 @@ housingsRouter.get("/city/:city", async (req: Request, res: Response) => {
   try {
     const city = req.params.city;
     const housing = await HousingsService.findAllByName(city);
-    res.status(200).json(housing);
+    res.status(200).json({housings: housing});
   } catch (e) {
     if (e instanceof NotFoundError) {
       res.status(404).json({ message: e.getMessage() });

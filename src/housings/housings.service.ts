@@ -27,7 +27,7 @@ export const findAllByName = async (city: string) => {
   if (res.rows.length === 0) {
     throw new NotFoundError(`Housings in city : ${city} not found`);
   }
-  return res.rows[0];
+  return res.rows;
 };
 
 export const findAllInRadius = async (area: Area) => {
@@ -39,11 +39,9 @@ export const findAllInRadius = async (area: Area) => {
   const degInKm = 111;
   const res = await query(preparedStatement);
   return res.rows.filter((housing: any) => {
-    const pos = housing.latlong;
-    const [housingLat, housingLong] = pos
-      .split("(")[1]
-      .split(")")[0]
-      .split(",");
+    const pos = JSON.parse(housing.latlong);
+    const housingLat = pos.latitude
+    const housingLong = pos.longitude
     const deltaLat = Math.abs(+housingLat - latitude);
     const deltaLong = Math.abs(+housingLong - longitude);
     return deltaLat * degInKm < radius && deltaLong * degInKm < radius;
