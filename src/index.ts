@@ -9,6 +9,7 @@ import { usersRouter } from "./users/users.router";
 import { housingsRouter } from "./housings/housings.router";
 import { initDatabase } from "./db/index";
 import { authRouter } from "./auth/auth.router";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -57,3 +58,14 @@ app.use("/api/auth", authRouter);
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
+
+export const socketServer = new Server(8000, {
+  cors: {
+    origin: "http://localhost",
+    methods: ["GET", "POST"],
+  },
+});
+
+export const notifyAll = (channel: string, payload: any) => {
+  socketServer.emit(channel, payload);
+};

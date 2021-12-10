@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { notifyAll } from "..";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { WrongTypeError } from "../exceptions/WrongTypeError";
 import { verifyAccess } from "../middlewares/auth.middleware";
@@ -65,6 +66,7 @@ housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
   try {
     const housing = castToBaseHousing(req.body);
     const newHousing = await HousingsService.create(housing, req.user.id);
+    notifyAll("/housings", { newHousing });
     res.status(201).json(newHousing);
   } catch (e) {
     if (e instanceof WrongTypeError) {
