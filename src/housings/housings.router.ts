@@ -20,10 +20,9 @@ housingsRouter.get("/area/:longitude&:latitude&:radius", async (req, res) => {
   try {
     const area = castToArea(req.params);
     const housingWithinArea = await HousingsService.findAllInRadius(area);
-    console.log(housingWithinArea)
     res.status(200).json({ housings: housingWithinArea });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     if (e instanceof WrongTypeError) {
       res.status(403).json({ msg: "Bad request (body)" });
     } else {
@@ -50,10 +49,10 @@ housingsRouter.get("/city/:city", async (req: Request, res: Response) => {
   try {
     const city = req.params.city;
     const housing = await HousingsService.findAllByName(city);
-    console.log(housing)
-    res.status(200).json({housings: housing});
+    console.log(housing);
+    res.status(200).json({ housings: housing });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     if (e instanceof NotFoundError) {
       res.status(404).json({ message: e.getMessage() });
     } else {
@@ -79,3 +78,12 @@ housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
 housingsRouter.patch("/", async (req: Request, res: Response) => {});
 
 housingsRouter.delete("/", async (req: Request, res: Response) => {});
+
+housingsRouter.get("/user", verifyAccess, async (req, res) => {
+  try {
+    const housings = HousingsService.findUserHousings(req.user.id);
+    res.status(200).json({ housings: housings });
+  } catch (e) {
+    res.sendStatus(500);
+  }
+});

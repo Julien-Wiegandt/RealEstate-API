@@ -17,7 +17,7 @@ export const findOne = async (id: string) => {
 };
 
 export const findAllByName = async (city: string) => {
-  let cityLower: string = "%"+city.toLowerCase()+"%"
+  let cityLower: string = "%" + city.toLowerCase() + "%";
   const preparedStatement = {
     name: "fetch-housing-id",
     text: "SELECT * FROM housings WHERE LOWER(city) LIKE $1",
@@ -36,16 +36,29 @@ export const findAllInRadius = async (area: Area) => {
     name: "fetch-all-housings",
     text: "SELECT * FROM housings",
   };
+  //1 deg of latitude/longitude in km
   const degInKm = 111;
   const res = await query(preparedStatement);
   return res.rows.filter((housing: any) => {
+    //Housing coordinates
     const pos = JSON.parse(housing.latlong);
-    const housingLat = pos.latitude
-    const housingLong = pos.longitude
+    const housingLat = pos.latitude;
+    const housingLong = pos.longitude;
     const deltaLat = Math.abs(+housingLat - latitude);
     const deltaLong = Math.abs(+housingLong - longitude);
+    //Keep only those where the distance is below radius
     return deltaLat * degInKm < radius && deltaLong * degInKm < radius;
   });
+};
+
+export const findUserHousings = async (userId: number) => {
+  const preparedStatement = {
+    name: "fetch-housing-user-id",
+    text: "SELECT * FROM housings WHERE userId = $1",
+    values: [userId],
+  };
+  const res = await query(preparedStatement);
+  return res.rows;
 };
 
 export const findAll = async () => {
