@@ -68,14 +68,6 @@ export const socketServer = new Server(8000, {
 
 
 
-socketServer.on("connection", (socket)=>{
-  console.log(socket.id)
-  socket.on("test", (socket)=>{
-    console.log("recu")
-  })
-})
-
-
 
 export const notifyAll = (channel: string, payload: any) => {
   socketServer.emit(channel, payload);
