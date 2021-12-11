@@ -42,7 +42,7 @@ const checkPassword = async (
   return await compare(plainTextPassword, hashedPassword);
 };
 
-const hashPassword = async (str: string) => {
+export const hashPassword = async (str: string) => {
   const saltRounds = 10;
   return await hash(str, saltRounds);
 };

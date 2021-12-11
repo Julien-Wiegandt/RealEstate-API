@@ -1,3 +1,4 @@
+import { hashPassword } from "../auth/auth.service";
 import { query } from "../db";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { BaseUser } from "./users.interface";
@@ -21,20 +22,22 @@ export const findAll = async () => {
     name: "fetch-all-users",
     text: "SELECT * FROM users",
   };
-  try {
-    const res = await query(preparedStatement);
-    return res.rows.map((user) => {
-      const { password, ...userData } = user;
-      return userData;
-    });
-  } catch (err) {
-    console.error(err);
-    throw Error();
-  }
+  const res = await query(preparedStatement);
+  return res.rows.map((user) => {
+    const { password, ...userData } = user;
+    return userData;
+  });
 };
 
-export const update = (id: string, user: BaseUser) => {
-  return true;
+export const update = async (id: string, user: BaseUser) => {
+  const hashedPass = await hashPassword(user.password);
+  const preparedStatement = {
+    name: "update-user",
+    text: "UPDATE users SET mail = $1, password = $2, name = $3 WHERE id = $4",
+    values: [user.mail, hashedPass, user.name, id],
+  };
+  const res = await query(preparedStatement);
+  return res.rowCount === 1;
 };
 
 export const deleteOne = (id: string) => {
