@@ -16,3 +16,11 @@ export function castToBaseUser(obj: any): BaseUser {
   }
   throw new WrongTypeError();
 }
+
+export function isPartialUser(obj: any) {
+  if (!obj || (!obj.mail && !obj.password && !obj.name)) {
+    return false;
+  } else {
+    return true;
+  }
+}
