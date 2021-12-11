@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import { notifyAll } from "..";
 import { NotFoundError } from "../exceptions/NotFoundError";
+import { UnauthorizedError } from "../exceptions/UnauthorizedError";
 import { WrongTypeError } from "../exceptions/WrongTypeError";
 import { verifyAccess } from "../middlewares/auth.middleware";
 import { castToArea, castToBaseHousing } from "./housings.interface";
@@ -88,4 +89,24 @@ housingsRouter.post("/", verifyAccess, async (req: Request, res: Response) => {
 
 housingsRouter.patch("/", async (req: Request, res: Response) => {});
 
-housingsRouter.delete("/", async (req: Request, res: Response) => {});
+housingsRouter.delete(
+  "/:id",
+  verifyAccess,
+  async (req: Request, res: Response) => {
+    try {
+      const deleteStatus = await HousingsService.deleteOne(
+        req.params.id,
+        req.user
+      );
+      res.status(200).json({ deleteStatus });
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        res.status(404).json({ message: e.getMessage() });
+      } else if (e instanceof UnauthorizedError) {
+        res.status(401).json({ message: e.getMessage() });
+      } else {
+        res.sendStatus(500);
+      }
+    }
+  }
+);

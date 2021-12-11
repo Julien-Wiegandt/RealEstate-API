@@ -1,6 +1,8 @@
 import { QueryConfig } from "pg";
 import { query } from "../db";
 import { NotFoundError } from "../exceptions/NotFoundError";
+import { UnauthorizedError } from "../exceptions/UnauthorizedError";
+import { User } from "../users/users.interface";
 import { Area, BaseHousing, Housing } from "./housings.interface";
 
 export const findOne = async (id: string) => {
@@ -123,6 +125,17 @@ export const update = (id: string, housing: Housing) => {
   return true;
 };
 
-export const deleteOne = (id: string) => {
-  return true;
+export const deleteOne = async (id: string, user: User) => {
+  const res = await findOne(id);
+  if (res.userid === user.id) {
+    const preparedStatement = {
+      name: "delete-housing-id",
+      text: "DELETE FROM housings WHERE id = $1",
+      values: [id],
+    };
+    await query(preparedStatement);
+    return true;
+  } else {
+    throw new UnauthorizedError(`You don't own this housing`);
+  }
 };
